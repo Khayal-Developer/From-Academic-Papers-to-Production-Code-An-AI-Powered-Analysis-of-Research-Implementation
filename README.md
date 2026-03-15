@@ -71,6 +71,7 @@ http://localhost:8501
 
 🗄️ Database Notes
 The `dump.sql` file (~919MB) is not included in this repository due to GitHub's file size limit.
+To acquire the file, visit Google Drive link (Note: dump.sql must be inside db_init folder) --> https://drive.google.com/drive/folders/1ZTYO4M5ymisiuL9Csyz5Kpxvxhl7zTwK?usp=drive_link
 
 To export the database from your local PostgreSQL
 pg_dump -U postgres -d knowledge_engine_db -f db_init/dump.sql
