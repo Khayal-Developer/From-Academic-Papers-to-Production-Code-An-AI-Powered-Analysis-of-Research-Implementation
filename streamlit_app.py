@@ -1,4 +1,5 @@
 import os
+import sys
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -10,15 +11,40 @@ import torch
 import psycopg2
 from sentence_transformers import SentenceTransformer, util
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
 # ─────────────────────────────────────────────
 # CONFIGURATION
+#
+# Create a file named `.env` in the same folder as this script
+# and fill in your own values. Example .env file:
+#
+#   DB_NAME=your_database_name
+#   DB_USER=your_database_user
+#   DB_PASS=your_database_password
+#   DB_HOST=your_database_host
+#
+# NEVER commit your .env file to GitHub.
+# Add `.env` to your .gitignore file.
 # ─────────────────────────────────────────────
+load_dotenv()
+
+def _require_env(var: str) -> str:
+    """Return the value of an environment variable, or exit with a clear error."""
+    value = os.getenv(var)
+    if not value:
+        sys.exit(
+            f"\n[CONFIG ERROR] Environment variable '{var}' is not set.\n"
+            f"Please create a .env file with your credentials.\n"
+            f"See the CONFIGURATION section in streamlit_app.py for instructions.\n"
+        )
+    return value
+
 DB_CONFIG = dict(
-    dbname=os.getenv("DB_NAME", "knowledge_engine_db"),
-    user=os.getenv("DB_USER", "postgres"),
-    password=os.getenv("DB_PASS", "12345"),
-    host=os.getenv("DB_HOST", "localhost")
+    dbname=_require_env("DB_NAME"),
+    user=_require_env("DB_USER"),
+    password=_require_env("DB_PASS"),
+    host=_require_env("DB_HOST"),
 )
 TABLE = "papers"
 
@@ -100,10 +126,10 @@ st.markdown(f"""
 # ─────────────────────────────────────────────
 @st.cache_resource
 def get_engine():
-    h = os.getenv("DB_HOST", "localhost")
-    u = os.getenv("DB_USER", "postgres")
-    p = os.getenv("DB_PASS", "12345")
-    d = os.getenv("DB_NAME", "knowledge_engine_db")
+    h = _require_env("DB_HOST")
+    u = _require_env("DB_USER")
+    p = _require_env("DB_PASS")
+    d = _require_env("DB_NAME")
     return create_engine(f"postgresql+psycopg2://{u}:{p}@{h}/{d}")
 
 @st.cache_data(ttl=300)
