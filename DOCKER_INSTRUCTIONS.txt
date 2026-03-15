@@ -1,0 +1,97 @@
+# 🐳 Docker Setup — AI Research Knowledge Engine
+# Run the full app + database on ANY device, anywhere, anytime
+
+# ─────────────────────────────────────────────
+# YOUR FOLDER STRUCTURE
+# ─────────────────────────────────────────────
+# knowledge_engine/
+# ├── Dockerfile
+# ├── docker-compose.yml
+# ├── requirements.txt
+# ├── streamlit_app.py
+# └── db_init/
+#     └── dump.sql        ← you create this (Step 1 below)
+
+# ─────────────────────────────────────────────
+# STEP 1 — EXPORT YOUR DATABASE (run on YOUR laptop)
+# ─────────────────────────────────────────────
+
+# Open Command Prompt and run:
+pg_dump -U postgres -d knowledge_engine_db -f db_init/dump.sql
+
+# If pg_dump is not found, use the full path:
+# "C:\Program Files\PostgreSQL\15\bin\pg_dump.exe" -U postgres -d knowledge_engine_db -f db_init\dump.sql
+
+# This creates a dump.sql file with ALL your data inside db_init folder
+# WARNING: This file will be large (~1-2 GB). That is normal.
+
+# ─────────────────────────────────────────────
+# STEP 2 — BUILD THE DOCKER IMAGE (run once)
+# ─────────────────────────────────────────────
+
+cd knowledge_engine
+docker-compose build
+
+# This will:
+# - Download Python 3.11
+# - Install all libraries (streamlit, pandas, numpy, etc.)
+# - Takes 5-10 minutes on first build
+
+# ─────────────────────────────────────────────
+# STEP 3 — RUN EVERYTHING
+# ─────────────────────────────────────────────
+
+docker-compose up
+
+# First run will:
+# 1. Start PostgreSQL container
+# 2. Auto-load your dump.sql into the database
+# 3. Start Streamlit app
+# 4. Open browser at http://localhost:8501
+
+# ─────────────────────────────────────────────
+# STEP 4 — OPEN IN BROWSER
+# ─────────────────────────────────────────────
+
+# On your laptop:       http://localhost:8501
+# On another device:    http://YOUR_IP:8501
+# Find your IP with:    ipconfig (Windows) or ifconfig (Mac/Linux)
+
+# ─────────────────────────────────────────────
+# DAILY USE COMMANDS
+# ─────────────────────────────────────────────
+
+# Start the app:
+docker-compose up
+
+# Start in background (no terminal window needed):
+docker-compose up -d
+
+# Stop the app:
+docker-compose down
+
+# Restart:
+docker-compose restart
+
+# View logs:
+docker-compose logs -f app
+
+# ─────────────────────────────────────────────
+# SHARE WITH JUDGES / ANYONE
+# ─────────────────────────────────────────────
+
+# Option A — Share the folder (they need Docker installed)
+# Just zip the entire knowledge_engine/ folder and send it
+# They run: docker-compose up
+# Done.
+
+# Option B — Push to Docker Hub (they need nothing except Docker)
+docker tag knowledge_engine_app YOUR_DOCKERHUB_USERNAME/knowledge-engine:latest
+docker push YOUR_DOCKERHUB_USERNAME/knowledge-engine:latest
+# They run: docker pull YOUR_DOCKERHUB_USERNAME/knowledge-engine:latest
+
+# ─────────────────────────────────────────────
+# INSTALL DOCKER (if not installed)
+# ─────────────────────────────────────────────
+# Windows/Mac: https://www.docker.com/products/docker-desktop
+# After install, restart your computer and run: docker --version

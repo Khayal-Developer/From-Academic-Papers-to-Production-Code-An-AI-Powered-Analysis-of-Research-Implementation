@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+
+  # ── PostgreSQL Database ──
+  db:
+    image: postgres:17
+    container_name: knowledge_engine_db
+    environment:
+      POSTGRES_DB: knowledge_engine_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "12345"
+    volumes:
+      - ./db_init:/docker-entrypoint-initdb.d   # auto-loads your SQL dump on first start
+      - postgres_data:/var/lib/postgresql/data   # persists data between restarts
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Streamlit App ──
+  app:
+    build: .
+    container_name: knowledge_engine_app
+    ports:
+      - "8501:8501"
+    environment:
+      DB_HOST: db          # points to the db service above, not localhost
+      DB_NAME: knowledge_engine_db
+      DB_USER: postgres
+      DB_PASS: "12345"
+    depends_on:
+      db:
+        condition: service_healthy   # waits for DB to be ready before starting
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
