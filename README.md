@@ -7,7 +7,12 @@ The project answers the question:
 >
 >
 > 🔗 Links
+
+
 📊 Power BI Dashboard (Online): https://app.powerbi.com/view?r=eyJrIjoiNjc3NWY2YTUtNTlkOC00ZWFlLThjYTgtMTI4NzNmNzk3YTU4IiwidCI6ImQ5MzRiZjA4LTk1ZjQtNGNjZC1hZDFiLWYzODM3M2E5NDM1NyIsImMiOjl9
+
+
+
 > 🌐 Developer Portfolio: https://www.khayal-hajiyev.com
 >
 > 
